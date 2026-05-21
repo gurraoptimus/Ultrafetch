@@ -112,31 +112,56 @@ export LC_ALL=sv_SE.UTF-8
 WEATHER=$(curl -fsS wttr.in/?format=1 2>/dev/null | sed -E 's/\x1b\[[0-9;]*m//g' || echo "Unavailable")
 
 
-# ===== VERSION & UPDATE CHECK =====
-SCRIPT_VERSION="1.0.0"
-LATEST_UPDATE="Unavailable"
-LATEST_TAG=""
-LATEST_URL=""
 
-# Try to fetch the latest release tag and message from GitHub
-LATEST_JSON=$(curl -fsSL "https://api.github.com/repos/gurraoptimus/ultra-fetch/releases/latest" 2>/dev/null || true)
-if [[ -n "$LATEST_JSON" ]]; then
-    LATEST_TAG=$(echo "$LATEST_JSON" | grep '"tag_name"' | head -n1 | cut -d '"' -f4)
-    LATEST_UPDATE=$(echo "$LATEST_JSON" | grep '"name"' | head -n1 | cut -d '"' -f4)
-    LATEST_URL="https://github.com/gurraoptimus/ultra-fetch/releases/tag/$LATEST_TAG"
-    if [[ -z "$LATEST_UPDATE" ]]; then
-        LATEST_UPDATE="Release: $LATEST_TAG"
+# ===== VERSION & SYSTEM UPDATE CHECK =====
+# Set SCRIPT_VERSION to Linux OS version
+SCRIPT_VERSION="$(uname -s) $(uname -r)"
+SYSTEM_UPDATE="Unknown"
+
+# Check for available system updates (Linux only)
+if command -v apt >/dev/null 2>&1; then
+    if command -v apt-get >/dev/null 2>&1; then
+        # Ubuntu/Debian
+        if [ "$(id -u)" -eq 0 ]; then
+            apt update -qq > /dev/null 2>&1
+        fi
+        UPDATES=$(apt list --upgradeable 2>/dev/null | grep -v "Listing..." | wc -l)
+        if [ "$UPDATES" -gt 0 ]; then
+            SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
+            # Prompt user to upgrade
+            echo
+            read -p "Upgrade $UPDATES package(s) now? [y/N]: " RESP
+            if [[ "$RESP" =~ ^[Yy]$ ]]; then
+                sudo apt update && sudo apt upgrade
+            fi
+        else
+            SYSTEM_UPDATE="System up to date"
+        fi
     fi
-else
-    # Fallback: get latest commit message from default branch
-    LATEST_JSON=$(curl -fsSL "https://api.github.com/repos/gurraoptimus/ultra-fetch/commits?per_page=1" 2>/dev/null || true)
-    if command -v jq >/dev/null 2>&1; then
-        LATEST_UPDATE=$(echo "$LATEST_JSON" | jq -r '.[0].commit.message' | head -n1)
+elif command -v pacman >/dev/null 2>&1; then
+    # Arch Linux
+    UPDATES=$(checkupdates 2>/dev/null | wc -l)
+    if [ "$UPDATES" -gt 0 ]; then
+        SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
     else
-        LATEST_UPDATE=$(echo "$LATEST_JSON" | awk -F '"' '/"message"/ {print $4; exit}')
+        SYSTEM_UPDATE="System up to date"
     fi
-    LATEST_TAG="main"
-    LATEST_URL="https://github.com/gurraoptimus/ultra-fetch/commits/main"
+elif command -v dnf >/dev/null 2>&1; then
+    # Fedora
+    UPDATES=$(dnf check-update 2>/dev/null | grep -E '^[a-zA-Z0-9]' | wc -l)
+    if [ "$UPDATES" -gt 0 ]; then
+        SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
+    else
+        SYSTEM_UPDATE="System up to date"
+    fi
+elif command -v zypper >/dev/null 2>&1; then
+    # openSUSE
+    UPDATES=$(zypper list-updates 2>/dev/null | grep -v '^Loading' | grep -v '^Repository' | grep -v '^$' | wc -l)
+    if [ "$UPDATES" -gt 0 ]; then
+        SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
+    else
+        SYSTEM_UPDATE="System up to date"
+    fi
 fi
 
 # ===== UI =====
@@ -164,10 +189,10 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\nGitHub: %b\nWebsite: %b\nProject: %
 SERVER_HOSTNAME="tailscale.taild60d34.ts.net"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Script Version" "Latest Update"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Script Version" "System Update"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$SCRIPT_VERSION" "$LATEST_UPDATE"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$SCRIPT_VERSION" "$SYSTEM_UPDATE"
 )
 
 # Header
