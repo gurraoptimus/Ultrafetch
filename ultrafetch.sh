@@ -13,6 +13,9 @@ set -Eeuo pipefail
 # Modern Neofetch / Fastfetch Style
 # ==========================================
 
+# ===== VERSION =====
+SCRIPT_VERSION="1.0"
+
 # ===== ERROR HANDLER =====
 error_handler() {
     local exit_code=$?
@@ -112,10 +115,9 @@ export LC_ALL=sv_SE.UTF-8
 WEATHER=$(curl -fsS wttr.in/?format=1 2>/dev/null | sed -E 's/\x1b\[[0-9;]*m//g' || echo "Unavailable")
 
 
-
 # ===== VERSION & SYSTEM UPDATE CHECK =====
-# Set SCRIPT_VERSION to Linux OS version
-SCRIPT_VERSION="$(uname -s) $(uname -r)"
+# Set LINUX_VERSION to Linux OS version
+LINUX_VERSION="$(uname -s) $(uname -r)"
 SYSTEM_UPDATE="Unknown"
 
 # Check for available system updates (Linux only)
@@ -181,7 +183,7 @@ LICENSE="Apache License 2.0"
 # OSC 8 hyperlink format: \e]8;;URL\aTEXT\e]8;;\a
 OSC8_GITHUB="\e]8;;$GITHUB_URL\a$GITHUB_URL\e]8;;\a"
 OSC8_WEBSITE="\e]8;;$WEBSITE_URL\a$WEBSITE_URL\e]8;;\a"
-OSC8_PROJECT="\e]8;;$PROJECT_NAME\a$PROJECT_NAME\e]8;;\a"
+OSC8_PROJECT="\e]8;;$PROJECT_URL\a$PROJECT_NAME\e]8;;\a"
 
 printf "${BOLD}${CYAN}Written by %s${RESET}\nGitHub: %b\nWebsite: %b\nProject: %b\n\n" "$AUTHOR_NAME" "$OSC8_GITHUB" "$OSC8_WEBSITE" "$OSC8_PROJECT"
 
@@ -189,10 +191,10 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\nGitHub: %b\nWebsite: %b\nProject: %
 SERVER_HOSTNAME="tailscale.taild60d34.ts.net"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Script Version" "System Update"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Version"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$SCRIPT_VERSION" "$SYSTEM_UPDATE"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_VERSION"
 )
 
 # Header
