@@ -107,9 +107,37 @@ elif [[ -f /sys/class/power_supply/BAT0/capacity ]]; then
 fi
 
 # ===== WEATHER =====
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+export LANG=sv_SE.UTF-8
+export LC_ALL=sv_SE.UTF-8
 WEATHER=$(curl -fsS wttr.in/?format=1 2>/dev/null | sed -E 's/\x1b\[[0-9;]*m//g' || echo "Unavailable")
+
+
+# ===== VERSION & UPDATE CHECK =====
+SCRIPT_VERSION="1.0.0"
+LATEST_UPDATE="Unavailable"
+LATEST_TAG=""
+LATEST_URL=""
+
+# Try to fetch the latest release tag and message from GitHub
+LATEST_JSON=$(curl -fsSL "https://api.github.com/repos/gurraoptimus/ultra-fetch/releases/latest" 2>/dev/null || true)
+if [[ -n "$LATEST_JSON" ]]; then
+    LATEST_TAG=$(echo "$LATEST_JSON" | grep '"tag_name"' | head -n1 | cut -d '"' -f4)
+    LATEST_UPDATE=$(echo "$LATEST_JSON" | grep '"name"' | head -n1 | cut -d '"' -f4)
+    LATEST_URL="https://github.com/gurraoptimus/ultra-fetch/releases/tag/$LATEST_TAG"
+    if [[ -z "$LATEST_UPDATE" ]]; then
+        LATEST_UPDATE="Release: $LATEST_TAG"
+    fi
+else
+    # Fallback: get latest commit message from default branch
+    LATEST_JSON=$(curl -fsSL "https://api.github.com/repos/gurraoptimus/ultra-fetch/commits?per_page=1" 2>/dev/null || true)
+    if command -v jq >/dev/null 2>&1; then
+        LATEST_UPDATE=$(echo "$LATEST_JSON" | jq -r '.[0].commit.message' | head -n1)
+    else
+        LATEST_UPDATE=$(echo "$LATEST_JSON" | awk -F '"' '/"message"/ {print $4; exit}')
+    fi
+    LATEST_TAG="main"
+    LATEST_URL="https://github.com/gurraoptimus/ultra-fetch/commits/main"
+fi
 
 # ===== UI =====
 clear
@@ -136,10 +164,10 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\nGitHub: %b\nWebsite: %b\nProject: %
 SERVER_HOSTNAME="tailscale.taild60d34.ts.net"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "IP" "Weather" "Server Hostname" "Server Path"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Script Version" "Latest Update"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$SCRIPT_VERSION" "$LATEST_UPDATE"
 )
 
 # Header
@@ -154,7 +182,7 @@ max_lines=$(( max_logo > max_info ? max_logo : max_info ))
 for ((i=0; i<max_lines; i++)); do
     printf "%-38b" "${logo_lines[i]:-}"
     if [[ $i -lt $max_info ]]; then
-        printf "${MAGENTA}%-9s${RESET} ${WHITE}%s${RESET}" "${info_labels[i]}:" "${info_values[i]}"
+        printf "${MAGENTA}%-14s${RESET} ${WHITE}%s${RESET}" "${info_labels[i]}:" "${info_values[i]}"
     fi
     echo
 done
