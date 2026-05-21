@@ -1,69 +1,57 @@
+<div align="center">
 
 # 🚀 Ultra Fetch
 
-```
- ╔═══════════════════════════════╗
- ║    ULTRA FETCH v1.0           ║
- ║  System Info Made Beautiful   ║
- ╚═══════════════════════════════╝
-```
+**A blazingly fast system information display tool**
 
-Modern terminal system info script inspired by Neofetch and Fastfetch.
+Inspired by [Neofetch](https://github.com/dylanaraps/neofetch) and [Fastfetch](https://github.com/fastfetch-cli/fastfetch)
 
-## Overview
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![GitHub](https://img.shields.io/badge/GitHub-gurraoptimus-black?logo=github)](https://github.com/gurraoptimus)
 
-Ultra Fetch is a Bash script that displays system details in a colorful, compact layout.
+</div>
 
-It shows:
+---
 
-- OS and kernel
-- Uptime
-- Shell and terminal
-- Package count
-- Memory and disk usage
-- Battery status
-- Local IP address
-- Weather (`wttr.in`)
-- System update status
+## ✨ Features
 
-## Features
-
-- Styled output with ANSI colors
-- Side-by-side ASCII logo and info table
-- OSC 8 clickable links (in supported terminals)
-- Distro-aware package/update checks
-- Error handling with line number and exit code
-
-## Requirements
-
-- Linux
-- Bash 4+
-- Core tools: `grep`, `awk`, `sed`, `df`, `free`, `hostname`, `uname`
-- Optional:
-  - `curl` for weather
-  - `acpi` for battery percentage
-  - Package tools (`apt`, `pacman`, `dnf`, `zypper`) for update checks
+- ⚡ **Ultra-fast** system information retrieval
+- 🎨 **Beautiful colored terminal output** with modern styling
+- 🖼️ **ASCII art logos** displayed side-by-side with system info
+- 📊 **Comprehensive system details**: OS, Kernel, Uptime, Shell, Terminal, Packages
+- 💾 **Resource monitoring**: Memory, Disk, Battery status
+- 🌍 **Network & Weather**: Local IP address and weather conditions
+- 📦 **Update checking**: APT, Pacman, DNF, and Zypper package managers
 
 ## Installation
 
 ```bash
+git clone https://github.com/gurraoptimus/ultra-fetch.git
+cd ultrafetch
 chmod +x ultrafetch.sh
+```
+
+## Usage
+
+```bash
 ./ultrafetch.sh
 ```
 
-## Notes
+## Example Output
 
-- Weather uses locale `sv_SE.UTF-8`.
-- On Debian/Ubuntu, the script may prompt for upgrade.
-- Update checks depend on available package manager tools.
+```text
+user@host 1.0 version
+────────────────────────────────────────────
+<ascii logo>   OS: Ubuntu 24.04 LTS
+               Kernel: 6.x.x
+               Uptime: 2 hours
+               Memory: 3.1Gi / 15.5Gi
+```
 
-## Author
+## Project
 
-- Gurraoptimus
-- GitHub: [gurraoptimus](https://github.com/gurraoptimus)
-- Website: [gurraoptimus.se](https://gurraoptimus.se)
-- Project: [ultra-fetch](https://github.com/gurraoptimus/ultra-fetch)
+- Repository: [Ultra Fetch](https://github.com/gurraoptimus/ultra-fetch)
 
 ## License
 
-Apache License 2.0
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)

@@ -63,6 +63,7 @@ ASCII='
 esac
 
 
+
 # ===== SYSTEM INFO =====
 USER_NAME=$(whoami)
 HOST_NAME=$(hostname)
@@ -174,31 +175,37 @@ mapfile -t logo_lines <<< "$ASCII"
 
 # Print author info with clickable links (OSC 8 hyperlinks if supported)
 AUTHOR_NAME="Gurraoptimus"
+ENTERPRISE_NAME="Gurraoptimus Development"
 GITHUB_URL="https://github.com/gurraoptimus"
 WEBSITE_URL="https://gurraoptimus.se"
 PROJECT_URL="https://github.com/gurraoptimus/ultra-fetch"
 PROJECT_NAME="Ultra Fetch"
 LICENSE="Apache License 2.0"
 
-# OSC 8 hyperlink format: \e]8;;URL\aTEXT\e]8;;\a
-OSC8_GITHUB="\e]8;;$GITHUB_URL\a$GITHUB_URL\e]8;;\a"
-OSC8_WEBSITE="\e]8;;$WEBSITE_URL\a$WEBSITE_URL\e]8;;\a"
-OSC8_PROJECT="\e]8;;$PROJECT_URL\a$PROJECT_NAME\e]8;;\a"
+#======= enterprise ========
 
-printf "${BOLD}${CYAN}Written by %s${RESET}\nGitHub: %b\nWebsite: %b\nProject: %b\n\n" "$AUTHOR_NAME" "$OSC8_GITHUB" "$OSC8_WEBSITE" "$OSC8_PROJECT"
+# OSC 8 hyperlink format: \e]8;;URL\aTEXT\e]8;;\a
+OSC8_WEBSITE="\e]8;;$WEBSITE_URL\a$WEBSITE_URL\e]8;;\a"
+OSC8_GITHUB="\e]8;;$GITHUB_URL\a$GITHUB_URL\e]8;;\a"
+OSC8_PROJECT="\e]8;;$PROJECT_NAME\a$PROJECT_NAME\e]8;;\a"
+OSC8_PROJECT="\e]8;;$PROJECT_URL\a$PROJECT_URL\e]8;;\a"
+OSC8_ENTERPRISE="\e]8;;$ENTERPRISE_NAME\a$ENTERPRISE_NAME\e]8;;\a"
+OSC8_LICENSE="\e]8;;https://www.apache.org/licenses/LICENSE-2.0\a$LICENSE\e]8;;\a"
+
+printf "${BOLD}${CYAN}Written by %s${RESET}\n${BLUE}GitHub:${RESET} %b\n${CYAN}Website:${RESET} %b\n${GREEN}Project:${RESET} %b\n${YELLOW}License:${RESET} %b\n${MAGENTA}Enterprise:${RED} %b\n\n" "$AUTHOR_NAME" "$OSC8_GITHUB" "$OSC8_WEBSITE" "$OSC8_PROJECT" "$OSC8_LICENSE" "$OSC8_ENTERPRISE"
 
 # Fastfetch-style info: label and value columns, modern color
 SERVER_HOSTNAME="tailscale.taild60d34.ts.net"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather" "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Version"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_VERSION"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE"
 )
 
 # Header
-printf "${BOLD}${WHITE}%s${RESET}${CYAN}@${RESET}${BOLD}${WHITE}%s${RESET}\n" "$USER_NAME" "$HOST_NAME"
+printf "${BOLD}${WHITE}%s${RESET}${CYAN}@${RESET}${BOLD}${WHITE}%s${RESET} ${YELLOW}%s version${RESET}\n" "$USER_NAME" "$HOST_NAME" "$SCRIPT_VERSION"
 printf "${BLUE}%0.s─" {1..44}; printf "${RESET}\n"
 
 # Print logo and info side by side
