@@ -80,10 +80,12 @@ TERM_NAME=${TERM:-unknown}
 
 
 # ===== MEMORY =====
+# Memory: human-readable (e.g., MiB/GiB)
 RAM_USED=$(free -h | awk '/Mem:/ {print $3}')
 RAM_TOTAL=$(free -h | awk '/Mem:/ {print $2}')
 
 # ===== DISK =====
+# Disk: human-readable (e.g., GiB)
 DISK_USED=$(df -h / | awk 'NR==2 {print $3}')
 DISK_TOTAL=$(df -h / | awk 'NR==2 {print $2}')
 
@@ -120,6 +122,7 @@ WEATHER=$(curl -fsS wttr.in/?format=1 2>/dev/null | sed -E 's/\x1b\[[0-9;]*m//g'
 # Set LINUX_VERSION to Linux OS version
 LINUX_VERSION="$(uname -s) $(uname -r)"
 SYSTEM_UPDATE="Unknown"
+LAST_UPDATE_TIME="Unknown"
 
 # Check for available system updates (Linux only)
 if command -v apt >/dev/null 2>&1; then
@@ -131,7 +134,6 @@ if command -v apt >/dev/null 2>&1; then
         UPDATES=$(apt list --upgradeable 2>/dev/null | grep -v "Listing..." | wc -l)
         if [ "$UPDATES" -gt 0 ]; then
             SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
-            # Prompt user to upgrade
             echo
             read -p "Upgrade $UPDATES package(s) now? [y/N]: " RESP
             if [[ "$RESP" =~ ^[Yy]$ ]]; then
@@ -139,6 +141,12 @@ if command -v apt >/dev/null 2>&1; then
             fi
         else
             SYSTEM_UPDATE="System up to date"
+        fi
+        # Get last update time from /var/lib/apt/periodic/update-success-stamp or /var/lib/apt/periodic/update-success-stamp
+        if [ -f /var/lib/apt/periodic/update-success-stamp ]; then
+            LAST_UPDATE_TIME=$(date -r /var/lib/apt/periodic/update-success-stamp '+%Y-%m-%d %H:%M:%S')
+        elif [ -f /var/lib/apt/periodic/update-stamp ]; then
+            LAST_UPDATE_TIME=$(date -r /var/lib/apt/periodic/update-stamp '+%Y-%m-%d %H:%M:%S')
         fi
     fi
 elif command -v pacman >/dev/null 2>&1; then
@@ -149,6 +157,10 @@ elif command -v pacman >/dev/null 2>&1; then
     else
         SYSTEM_UPDATE="System up to date"
     fi
+    # Get last update time from /var/lib/pacman/sync
+    if [ -d /var/lib/pacman/sync ]; then
+        LAST_UPDATE_TIME=$(ls -lt --time-style='+%Y-%m-%d %H:%M:%S' /var/lib/pacman/sync | awk 'NR==2 {print $6, $7}')
+    fi
 elif command -v dnf >/dev/null 2>&1; then
     # Fedora
     UPDATES=$(dnf check-update 2>/dev/null | grep -E '^[a-zA-Z0-9]' | wc -l)
@@ -157,6 +169,10 @@ elif command -v dnf >/dev/null 2>&1; then
     else
         SYSTEM_UPDATE="System up to date"
     fi
+    # Get last update time from /var/lib/dnf/history.sqlite
+    if [ -f /var/lib/dnf/history.sqlite ]; then
+        LAST_UPDATE_TIME=$(date -r /var/lib/dnf/history.sqlite '+%Y-%m-%d %H:%M:%S')
+    fi
 elif command -v zypper >/dev/null 2>&1; then
     # openSUSE
     UPDATES=$(zypper list-updates 2>/dev/null | grep -v '^Loading' | grep -v '^Repository' | grep -v '^$' | wc -l)
@@ -164,6 +180,10 @@ elif command -v zypper >/dev/null 2>&1; then
         SYSTEM_UPDATE="$UPDATES package(s) can be upgraded"
     else
         SYSTEM_UPDATE="System up to date"
+    fi
+    # Get last update time from /var/cache/zypp/zypp-history
+    if [ -f /var/cache/zypp/zypp-history ]; then
+        LAST_UPDATE_TIME=$(date -r /var/cache/zypp/zypp-history '+%Y-%m-%d %H:%M:%S')
     fi
 fi
 
@@ -178,7 +198,7 @@ AUTHOR_NAME="Gurraoptimus"
 ENTERPRISE_NAME="Gurraoptimus Development"
 GITHUB_URL="https://github.com/gurraoptimus"
 WEBSITE_URL="https://gurraoptimus.se"
-PROJECT_URL="https://github.com/gurraoptimus/ultra-fetch"
+PROJECT_URL="https://github.com/gurraoptimus/Ultrafetch"
 PROJECT_NAME="Ultra Fetch"
 LICENSE="Apache License 2.0"
 
