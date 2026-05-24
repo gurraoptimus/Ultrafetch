@@ -187,44 +187,12 @@ elif command -v zypper >/dev/null 2>&1; then
     fi
 fi
 
-# ===== SCRIPT SELF-UPDATE FROM GITHUB RAW =====
-# Set ULTRAFETCH_RAW_URL to the raw script URL and ULTRAFETCH_TOKEN to a GitHub token with repo access if private
-ULTRAFETCH_RAW_URL="${ULTRAFETCH_RAW_URL:-https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh}"
-ULTRAFETCH_TOKEN="${ULTRAFETCH_TOKEN:-}" # Set to your GitHub token if needed
-
-if command -v curl >/dev/null 2>&1 && [ -n "$ULTRAFETCH_RAW_URL" ]; then
-    TMP_ULTRAFETCH="$(mktemp)"
-    if [ -n "$ULTRAFETCH_TOKEN" ]; then
-        curl -fsSL -H "Authorization: token $ULTRAFETCH_TOKEN" "$ULTRAFETCH_RAW_URL" -o "$TMP_ULTRAFETCH"
-    else
-        curl -fsSL "$ULTRAFETCH_RAW_URL" -o "$TMP_ULTRAFETCH"
-    fi
-    if [ -s "$TMP_ULTRAFETCH" ]; then
-        if command -v sha256sum >/dev/null 2>&1; then
-            LOCAL_SUM=$(sha256sum "$0" | awk '{print $1}')
-            REMOTE_SUM=$(sha256sum "$TMP_ULTRAFETCH" | awk '{print $1}')
-        else
-            LOCAL_SUM=$(md5sum "$0" | awk '{print $1}')
-            REMOTE_SUM=$(md5sum "$TMP_ULTRAFETCH" | awk '{print $1}')
-        fi
-        if [ "$LOCAL_SUM" != "$REMOTE_SUM" ]; then
-            echo
-            echo "${YELLOW}A new version of Ultra Fetch is available on GitHub!${RESET}"
-            read -p "Update and install the latest script now? [y/N]: " REPO_RESP
-            if [[ "$REPO_RESP" =~ ^[Yy]$ ]]; then
-                cp "$TMP_ULTRAFETCH" "$0"
-                chmod +x "$0"
-                echo "${GREEN}Update complete. Please re-run the script.${RESET}"
-                rm -f "$TMP_ULTRAFETCH"
-                exit 0
-            fi
-        fi
-    fi
-    rm -f "$TMP_ULTRAFETCH"
-fi
 
 # ===== UI =====
 clear
+
+# Get last modified time of this script
+SCRIPT_LAST_MODIFIED="$(date -r "$0" '+%Y-%m-%d %H:%M:%S' 2>/dev/null || echo "Unknown")"
 
 # Split ASCII logo into lines
 mapfile -t logo_lines <<< "$ASCII" 
@@ -254,10 +222,10 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\n${BLUE}GitHub:${RESET} %b\n${CYAN}W
 SERVER_HOSTNAME="$(hostname)"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Last Modified"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_LAST_MODIFIED"
 )
 
 # Header
