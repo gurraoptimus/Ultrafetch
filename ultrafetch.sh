@@ -15,6 +15,7 @@ set -Eeuo pipefail
 
 # ===== VERSION =====
 SCRIPT_VERSION=""
+LAST_UPDATE=""
 
 # ===== ERROR HANDLER =====
 error_handler() {
@@ -188,6 +189,7 @@ elif command -v zypper >/dev/null 2>&1; then
 fi
 
 # ask if you need to curl github for latest version of this script, and if so, update it
+
 if command -v curl >/dev/null 2>&1; then
     echo
     read -p "Check for latest version of this script on GitHub? [y/N]: " RESP
@@ -195,12 +197,8 @@ if command -v curl >/dev/null 2>&1; then
         LATEST_VERSION=$(curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/version 2>/dev/null || echo "Unknown")
         if [ "$LATEST_VERSION" != "Unknown" ] && [ "$LATEST_VERSION" != "$SCRIPT_VERSION" ]; then
             echo "New version available: $LATEST_VERSION (current: $SCRIPT_VERSION)"
-            read -p "Update to latest version now? [y/N]: " UPDATE_RESP
-            if [[ "$UPDATE_RESP" =~ ^[Yy]$ ]]; then
-                curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0" 2>/dev/null
-                echo "Script updated to version $LATEST_VERSION. Please run it again."
-                exit 0
-            fi
+            echo "To download the latest version, run:"
+            echo "curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o ultrafetch.sh"
         else
             echo "You are already using the latest version: $SCRIPT_VERSION"
         fi
@@ -257,7 +255,13 @@ max_info=${#info_labels[@]}
 max_lines=$(( max_logo > max_info ? max_logo : max_info ))
 
 for ((i=0; i<max_lines; i++)); do
-    printf "%-38b" "${logo_lines[i]:-}"
+    # Print logo line if present, else print spaces
+    if [[ -n "${logo_lines[i]:-}" ]]; then
+        printf "%-38s" "${logo_lines[i]}"
+    else
+        printf "%-38s" ""
+    fi
+    # Print info label and value if present
     if [[ $i -lt $max_info ]]; then
         printf "${MAGENTA}%-14s${RESET} ${WHITE}%s${RESET}" "${info_labels[i]}:" "${info_values[i]}"
     fi
