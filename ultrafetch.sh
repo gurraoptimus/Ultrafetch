@@ -186,14 +186,25 @@ elif command -v zypper >/dev/null 2>&1; then
         LAST_UPDATE_TIME=$(date -r /var/cache/zypp/zypp-history '+%Y-%m-%d %H:%M:%S')
     fi
 fi
-# the script update check is now stored in SYSTEM_UPDATE and the last update time is stored in LAST_UPDATE_TIME, which can be displayed in the output
 
-if [[ "$1" == "--selfupdate" ]]; then
-    echo "Downloading latest version from GitHub..."
-    curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o ultrafetch.sh
-    chmod +x ultrafetch.sh
-    echo "ultrafetch.sh has been updated. Please re-run the script."
-    exit 0    bash ultrafetch.sh --selfupdate
+# ask if you need to curl github for latest version of this script, and if so, update it
+if command -v curl >/dev/null 2>&1; then
+    echo
+    read -p "Check for latest version of this script on GitHub? [y/N]: " RESP
+    if [[ "$RESP" =~ ^[Yy]$ ]]; then
+        LATEST_VERSION=$(curl -fsS https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/version 2>/dev/null || echo "Unknown")
+        if [ "$LATEST_VERSION" != "Unknown" ] && [ "$LATEST_VERSION" != "$SCRIPT_VERSION" ]; then
+            echo "New version available: $LATEST_VERSION (current: $SCRIPT_VERSION)"
+            read -p "Update to latest version now? [y/N]: " UPDATE_RESP
+            if [[ "$UPDATE_RESP" =~ ^[Yy]$ ]]; then
+                curl -fsS https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0" 2>/dev/null
+                echo "Script updated to version $LATEST_VERSION. Please run it again."
+                exit 0
+            fi
+        else
+            echo "You are already using the latest version: $SCRIPT_VERSION"
+        fi
+    fi
 fi
 
 # ===== UI =====
