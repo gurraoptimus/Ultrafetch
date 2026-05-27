@@ -188,9 +188,6 @@ elif command -v zypper >/dev/null 2>&1; then
 fi
 
 # Set SYSTEM_UPDATE to include last update time if available
-if [ "$LAST_UPDATE_TIME" != "Unknown" ]; then
-    SYSTEM_UPDATE="$SYSTEM_UPDATE (Last update: $LAST_UPDATE_TIME)"
-fi
 if [[ "$1" == "--self-update" ]]; then
     echo "Downloading latest version from GitHub..."
     curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0"
