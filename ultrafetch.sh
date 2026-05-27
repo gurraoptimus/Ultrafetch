@@ -1,4 +1,36 @@
+
 #!/bin/bash
+
+# ===== AUTO-UPDATE FROM GITHUB =====
+GITHUB_RAW_URL="https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh"
+TMP_SCRIPT="/tmp/ultrafetch_latest.sh"
+SCRIPT_PATH="$0"
+
+if command -v curl >/dev/null 2>&1; then
+    echo "Checking for new script version on GitHub..."
+    if curl -fsSL "$GITHUB_RAW_URL" -o "$TMP_SCRIPT"; then
+        LOCAL_VERSION=$(grep '^SCRIPT_VERSION=' "$SCRIPT_PATH" | cut -d= -f2 | tr -d '"')
+        REMOTE_VERSION=$(grep '^SCRIPT_VERSION=' "$TMP_SCRIPT" | cut -d= -f2 | tr -d '"')
+        if [ -n "$REMOTE_VERSION" ] && [ "$REMOTE_VERSION" != "$LOCAL_VERSION" ]; then
+            echo "A new version ($REMOTE_VERSION) is available. You have $LOCAL_VERSION."
+            read -p "Update script now? [y/N]: " UPDATE
+            if [[ "$UPDATE" =~ ^[Yy]$ ]]; then
+                cp "$TMP_SCRIPT" "$SCRIPT_PATH"
+                chmod +x "$SCRIPT_PATH"
+                echo "Script updated to version $REMOTE_VERSION. Please re-run the script."
+                rm -f "$TMP_SCRIPT"
+                exit 0
+            else
+                echo "Update skipped."
+            fi
+        else
+            echo "You already have the latest version."
+        fi
+        rm -f "$TMP_SCRIPT"
+    else
+        echo "Could not check for updates (curl failed)."
+    fi
+fi
 
 # ==========================================
 # Written by Gurraoptimus
@@ -186,6 +218,8 @@ elif command -v zypper >/dev/null 2>&1; then
         LAST_UPDATE_TIME=$(date -r /var/cache/zypp/zypp-history '+%Y-%m-%d %H:%M:%S')
     fi
 fi
+
+
 
 
 # ===== UI =====
