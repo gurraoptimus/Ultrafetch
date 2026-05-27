@@ -23,10 +23,24 @@ Inspired by [Neofetch](https://github.com/dylanaraps/neofetch) and [Fastfetch](h
 - 🌍 **Network & Weather**: Local IP address and weather conditions
 - 📦 **Update checking**: APT, Pacman, DNF, and Zypper package managers
 
+
+## 🆕 More Features & Updates
+
+- 🔄 **Self-update prompt**: Option to download and run the latest script version directly from GitHub, with an animated progress bar.
+- 🌦️ **Live weather info**: Fetches and displays current weather for your location.
+- 🔋 **Battery status**: Supports both ACPI and sysfs battery info for laptops.
+- 🖥️ **Terminal & shell detection**: Shows your current terminal and shell.
+- 🧑‍💻 **User & host display**: Shows the current user and hostname in the header.
+- 🕒 **Last script modification time**: Displays when the script was last updated on your system.
+- 🖼️ **Modern, colored output**: Uses bold and colorized labels for a clean, modern look.
+- 🟩 **Animated color blocks**: Fastfetch-style color bars for visual flair.
+- 🛡️ **Robust error handling**: Script exits gracefully and restores cursor on error or interruption.
+- 🏷️ **Clickable hyperlinks**: OSC 8 hyperlinks for GitHub, website, and license (if supported by your terminal).
+
 ## Installation
 
 ```bash
-git clone https://github.com/gurraoptimus/ultra-fetch.git
+git clone https://github.com/gurraoptimus/ultrafetch.git
 cd ultrafetch
 chmod +x ultrafetch.sh
 ```
