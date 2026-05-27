@@ -189,9 +189,9 @@ fi
 # ===== SELF-UPDATE CHECK =====
 # Download latest script and make it executable
 
-read -p "Download latest script? (y/n): " -n 1 -r
+read -p "Download latest from Github script? (y/n): " -n 1 -r
 echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if [[ $REPLY =~ ^[Yy]$ ]];
     if curl -fsL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null; then
         chmod +x /tmp/ultrafetch.sh
     fi
