@@ -14,7 +14,7 @@ set -Eeuo pipefail
 # ==========================================
 
 # ===== VERSION =====
-SCRIPT_VERSION="1.0"
+SCRIPT_VERSION=""
 
 # ===== ERROR HANDLER =====
 error_handler() {
