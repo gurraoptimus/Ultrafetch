@@ -186,16 +186,15 @@ elif command -v zypper >/dev/null 2>&1; then
         LAST_UPDATE_TIME=$(date -r /var/cache/zypp/zypp-history '+%Y-%m-%d %H:%M:%S')
     fi
 fi
+# the script update check is now stored in SYSTEM_UPDATE and the last update time is stored in LAST_UPDATE_TIME, which can be displayed in the output
 
-# Set SYSTEM_UPDATE to include last update time if available
-if [[ "$1" == "--self-update" ]]; then
+if [[ "$1" == "--selfupdate" ]]; then
     echo "Downloading latest version from GitHub..."
-    curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0"
-    chmod +x "$0"
+    curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o ultrafetch.sh
+    chmod +x ultrafetch.sh
     echo "ultrafetch.sh has been updated. Please re-run the script."
-    exit 0
+    exit 0    bash ultrafetch.sh --selfupdate
 fi
-
 
 # ===== UI =====
 clear
