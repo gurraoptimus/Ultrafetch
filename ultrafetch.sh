@@ -187,12 +187,13 @@ elif command -v zypper >/dev/null 2>&1; then
 fi
 
 # ===== SELF-UPDATE CHECK =====
-echo
-# Download latest script and make it executable if user wants
+# Download latest script and make it executable
+
 read -p "Download latest from Github script? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    if curl -fsL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null; then
+    echo "Downloading latest script from GitHub..."
+    if curl --progress-bar -fSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh; then
         chmod +x /tmp/ultrafetch.sh
         echo "Running the latest script..."
         exec /tmp/ultrafetch.sh
