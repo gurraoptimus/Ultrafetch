@@ -186,8 +186,13 @@ elif command -v zypper >/dev/null 2>&1; then
     fi
 fi
 
-# ask download latest script from GitHub repo, use curl -fsL to download script
-curl -fsL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null || true
+# ===== SELF-UPDATE CHECK =====
+
+
+# Download latest script and make it executable
+if curl -fsL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null; then
+    chmod +x /tmp/ultrafetch.sh
+fi
 
 # ===== UI =====
 clear
