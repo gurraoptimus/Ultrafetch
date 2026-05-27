@@ -192,12 +192,12 @@ if command -v curl >/dev/null 2>&1; then
     echo
     read -p "Check for latest version of this script on GitHub? [y/N]: " RESP
     if [[ "$RESP" =~ ^[Yy]$ ]]; then
-        LATEST_VERSION=$(curl -fsS https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/version 2>/dev/null || echo "Unknown")
+        LATEST_VERSION=$(curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/version 2>/dev/null || echo "Unknown")
         if [ "$LATEST_VERSION" != "Unknown" ] && [ "$LATEST_VERSION" != "$SCRIPT_VERSION" ]; then
             echo "New version available: $LATEST_VERSION (current: $SCRIPT_VERSION)"
             read -p "Update to latest version now? [y/N]: " UPDATE_RESP
             if [[ "$UPDATE_RESP" =~ ^[Yy]$ ]]; then
-                curl -fsS https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0" 2>/dev/null
+                curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0" 2>/dev/null
                 echo "Script updated to version $LATEST_VERSION. Please run it again."
                 exit 0
             fi
