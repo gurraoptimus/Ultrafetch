@@ -192,8 +192,22 @@ fi
 read -p "Download latest from Github script? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Downloading latest script from GitHub..."
-    if curl --progress-bar -fSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh; then
+    echo -n "Downloading latest script from GitHub: "
+    # Start curl in background, redirect output
+    curl -fSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null &
+    CURL_PID=$!
+    # Animated progress bar
+    bar=("|" "/" "-" "\\")
+    i=0
+    while kill -0 $CURL_PID 2>/dev/null; do
+        printf "\b%s" "${bar[i++ % 4]}"
+        sleep 0.1
+    done
+    wait $CURL_PID
+    CURL_STATUS=$?
+    printf "\b"
+    if [ $CURL_STATUS -eq 0 ]; then
+        echo "Done."
         chmod +x /tmp/ultrafetch.sh
         echo "Running the latest script..."
         exec /tmp/ultrafetch.sh
