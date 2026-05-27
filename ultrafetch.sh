@@ -1,36 +1,4 @@
-
 #!/bin/bash
-
-# ===== AUTO-UPDATE FROM GITHUB =====
-GITHUB_RAW_URL="https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh"
-TMP_SCRIPT="/tmp/ultrafetch_latest.sh"
-SCRIPT_PATH="$0"
-
-if command -v curl >/dev/null 2>&1; then
-    echo "Checking for new script version on GitHub..."
-    if curl -fsSL "$GITHUB_RAW_URL" -o "$TMP_SCRIPT"; then
-        LOCAL_VERSION=$(grep '^SCRIPT_VERSION=' "$SCRIPT_PATH" | cut -d= -f2 | tr -d '"')
-        REMOTE_VERSION=$(grep '^SCRIPT_VERSION=' "$TMP_SCRIPT" | cut -d= -f2 | tr -d '"')
-        if [ -n "$REMOTE_VERSION" ] && [ "$REMOTE_VERSION" != "$LOCAL_VERSION" ]; then
-            echo "A new version ($REMOTE_VERSION) is available. You have $LOCAL_VERSION."
-            read -p "Update script now? [y/N]: " UPDATE
-            if [[ "$UPDATE" =~ ^[Yy]$ ]]; then
-                cp "$TMP_SCRIPT" "$SCRIPT_PATH"
-                chmod +x "$SCRIPT_PATH"
-                echo "Script updated to version $REMOTE_VERSION. Please re-run the script."
-                rm -f "$TMP_SCRIPT"
-                exit 0
-            else
-                echo "Update skipped."
-            fi
-        else
-            echo "You already have the latest version."
-        fi
-        rm -f "$TMP_SCRIPT"
-    else
-        echo "Could not check for updates (curl failed)."
-    fi
-fi
 
 # ==========================================
 # Written by Gurraoptimus
@@ -46,7 +14,7 @@ set -Eeuo pipefail
 # ==========================================
 
 # ===== VERSION =====
-SCRIPT_VERSION="2.0"
+SCRIPT_VERSION="1.0"
 
 # ===== ERROR HANDLER =====
 error_handler() {
@@ -219,7 +187,17 @@ elif command -v zypper >/dev/null 2>&1; then
     fi
 fi
 
-
+# Set SYSTEM_UPDATE to include last update time if available
+if [ "$LAST_UPDATE_TIME" != "Unknown" ]; then
+    SYSTEM_UPDATE="$SYSTEM_UPDATE (Last update: $LAST_UPDATE_TIME)"
+fi
+if [[ "$1" == "--self-update" ]]; then
+    echo "Downloading latest version from GitHub..."
+    curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o "$0"
+    chmod +x "$0"
+    echo "ultrafetch.sh has been updated. Please re-run the script."
+    exit 0
+fi
 
 
 # ===== UI =====
