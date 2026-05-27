@@ -193,21 +193,25 @@ read -p "Download latest from Github script? (y/N): " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo -n "Downloading latest script from GitHub: "
+    # Animated progress bar with growing bar and percent
+    BAR_LENGTH=30
+    PROGRESS=0
     # Start curl in background, redirect output
     curl -fSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null &
     CURL_PID=$!
-    # Animated progress bar
-    bar=("|" "/" "-" "\\")
-    i=0
     while kill -0 $CURL_PID 2>/dev/null; do
-        printf "\b%s" "${bar[i++ % 4]}"
-        sleep 0.1
+        PROGRESS=$(( (PROGRESS + 1) % (BAR_LENGTH + 1) ))
+        FILLED=$(printf '%*s' "$PROGRESS" | tr ' ' '#')
+        EMPTY=$(printf '%*s' "$((BAR_LENGTH - PROGRESS))" | tr ' ' '-')
+        PERCENT=$(( (PROGRESS * 100) / BAR_LENGTH ))
+        printf "\r[\e[32m%s\e[0m%s] %3d%%" "$FILLED" "$EMPTY" "$PERCENT"
+        sleep 0.07
     done
     wait $CURL_PID
     CURL_STATUS=$?
-    printf "\b"
+    printf "\r[\e[32m%*s\e[0m] 100%%\n" "$BAR_LENGTH" | tr ' ' '#'
     if [ $CURL_STATUS -eq 0 ]; then
-        echo "Done."
+        echo "Download complete."
         chmod +x /tmp/ultrafetch.sh
         echo "Running the latest script..."
         exec /tmp/ultrafetch.sh
