@@ -14,9 +14,7 @@ set -Eeuo pipefail
 # ==========================================
 
 # ===== VERSION =====
-SCRIPT_VERSION=""
-LAST_UPDATE=""
-
+SCRIPT_VERSION="1.0"
 # ===== ERROR HANDLER =====
 error_handler() {
     local exit_code=$?
@@ -188,22 +186,8 @@ elif command -v zypper >/dev/null 2>&1; then
     fi
 fi
 
-# ask if you need to curl github for latest version of this script, and if so, update it
-
-if command -v curl >/dev/null 2>&1; then
-    echo
-    read -p "Check for latest version of this script on GitHub? [y/N]: " RESP
-    if [[ "$RESP" =~ ^[Yy]$ ]]; then
-        LATEST_VERSION=$(curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/version 2>/dev/null || echo "Unknown")
-        if [ "$LATEST_VERSION" != "Unknown" ] && [ "$LATEST_VERSION" != "$SCRIPT_VERSION" ]; then
-            echo "New version available: $LATEST_VERSION (current: $SCRIPT_VERSION)"
-            echo "To download the latest version, run:"
-            echo "curl -fsSL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o ultrafetch.sh"
-        else
-            echo "You are already using the latest version: $SCRIPT_VERSION"
-        fi
-    fi
-fi
+# ask download latest script from GitHub repo, use curl -fsL to download script
+curl -fsL https://raw.githubusercontent.com/gurraoptimus/Ultrafetch/main/ultrafetch.sh -o /tmp/ultrafetch.sh 2>/dev/null || true
 
 # ===== UI =====
 clear
