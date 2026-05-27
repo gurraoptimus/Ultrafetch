@@ -113,7 +113,7 @@ fi
 
 # ===== WEATHER =====
 export LANG=sv_SE.UTF-8
-export LC_ALL=en_US.UTF-8
+export LC_ALL=sv_SE.UTF-8
 WEATHER=$(curl -fsS wttr.in/?format=1 2>/dev/null | sed -E 's/\x1b\[[0-9;]*m//g' || echo "Unavailable")
 
 
