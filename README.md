@@ -21,7 +21,7 @@
 ## Installation
 
 ```bash
-git clone https://github.com/gurraoptimus/ultrafetch.git
+git clone https://github.com/gurraoptimus/Ultrafetch.git
 cd ultrafetch
 chmod +x ultrafetch.sh
 ./ultrafetch.sh
