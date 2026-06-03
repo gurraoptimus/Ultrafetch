@@ -52,12 +52,11 @@ case "$DISTRO" in
 
 *)
 ASCII='
-             
- _____ _____ 
-|  |  |   __|
-|  |  |   __|
-|_____|__|   
-             
+ _____ _____ _____ _____ __    _____ 
+|  _  | __  |   | |   __|  |  |     |
+|     |    -| | | |   __|  |__|  |  |
+|__|__|__|__|_|___|__|  |_____|_____|
+
 '
 ;;
 esac
@@ -77,6 +76,58 @@ UPTIME=$(uptime -p 2>/dev/null | sed 's/up //' || echo "Unknown")
 SHELL_NAME=$(basename "${SHELL:-unknown}")
 
 TERM_NAME=${TERM:-unknown}
+
+# ===== CPU =====
+CPU_MODEL="Unknown"
+if [[ -r /proc/cpuinfo ]]; then
+    CPU_MODEL=$(awk -F: '/model name/ {gsub(/^[ \t]+/, "", $2); print $2; exit}' /proc/cpuinfo)
+fi
+
+CPU_STATUS="Unknown"
+if [[ -r /proc/stat ]]; then
+    cpu_line_1=$(awk '/^cpu / {print $2, $3, $4, $5, $6, $7, $8, $9}' /proc/stat)
+    read -r u1 n1 s1 i1 w1 irq1 si1 st1 <<< "$cpu_line_1"
+    total_1=$((u1 + n1 + s1 + i1 + w1 + irq1 + si1 + st1))
+    idle_1=$((i1 + w1))
+
+    sleep 0.2
+
+    cpu_line_2=$(awk '/^cpu / {print $2, $3, $4, $5, $6, $7, $8, $9}' /proc/stat)
+    read -r u2 n2 s2 i2 w2 irq2 si2 st2 <<< "$cpu_line_2"
+    total_2=$((u2 + n2 + s2 + i2 + w2 + irq2 + si2 + st2))
+    idle_2=$((i2 + w2))
+
+    total_delta=$((total_2 - total_1))
+    idle_delta=$((idle_2 - idle_1))
+
+    if (( total_delta > 0 )); then
+        cpu_used_pct=$(( (100 * (total_delta - idle_delta)) / total_delta ))
+        CPU_STATUS="${cpu_used_pct}% used"
+    fi
+fi
+
+# ===== GPU =====
+GPU_MODEL="Not detected"
+GPU_STATUS="N/A"
+
+if command -v nvidia-smi >/dev/null 2>&1; then
+    GPU_MODEL=$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | head -n1 || echo "NVIDIA GPU")
+    gpu_metrics=$(nvidia-smi --query-gpu=utilization.gpu,temperature.gpu --format=csv,noheader,nounits 2>/dev/null | head -n1 || true)
+    if [[ -n "$gpu_metrics" ]]; then
+        IFS=',' read -r gpu_util gpu_temp <<< "$gpu_metrics"
+        gpu_util=$(echo "$gpu_util" | xargs)
+        gpu_temp=$(echo "$gpu_temp" | xargs)
+        GPU_STATUS="${gpu_util}% used, ${gpu_temp}C"
+    else
+        GPU_STATUS="NVIDIA detected"
+    fi
+elif command -v lspci >/dev/null 2>&1; then
+    gpu_line=$(lspci 2>/dev/null | grep -Ei 'vga|3d|display' | head -n1 || true)
+    if [[ -n "$gpu_line" ]]; then
+        GPU_MODEL="$gpu_line"
+        GPU_STATUS="Detected"
+    fi
+fi
 
 
 # ===== MEMORY =====
@@ -255,10 +306,10 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\n${WHITE}GitHub:${RESET} %b\n${CYAN}
 SERVER_HOSTNAME="$(hostname)"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Hostname" "dir Path" "Linux Version" "System Update" "Script Last Modified"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "CPU" "CPU Status" "GPU" "GPU Status" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Last Modified"
 )
 info_values=(
-    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_LAST_MODIFIED"
+    "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$CPU_MODEL" "$CPU_STATUS" "$GPU_MODEL" "$GPU_STATUS" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_LAST_MODIFIED"
 )
 
 # Header
