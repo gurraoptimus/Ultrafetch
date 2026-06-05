@@ -286,7 +286,7 @@ AUTHOR_NAME="Gurraoptimus"
 ENTERPRISE_NAME="Gurraoptimus Development"
 GITHUB_URL="https://github.com/gurraoptimus"
 WEBSITE_URL="https://gurraoptimus.se"
-PROJECT_URL="https://gurraoptimus.github.io/gurraoptimus/Ultrafetch"
+PROJECT_URL="https://gurraoptimus.se/Ultrafetch"
 PROJECT_NAME="Ultra Fetch"
 LICENSE="Apache License 2.0"
 
