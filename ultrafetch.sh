@@ -306,7 +306,7 @@ printf "${BOLD}${CYAN}Written by %s${RESET}\n${WHITE}GitHub:${RESET} %b\n${CYAN}
 SERVER_HOSTNAME="$(hostname)"
 SERVER_PATH="$(pwd)"
 info_labels=(
-    "OS" "Kernel" "Uptime" "Shell" "Terminal" "CPU" "CPU Status" "GPU" "GPU Status" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Last Modified"
+    "OS" "Kernel" "Uptime" "Shell" "Terminal" "CPU" "GPU" "CPU Status" "GPU Status" "Packages" "Memory" "Disk" "Battery" "Local IP (eth0)" "Weather"  "Server Hostname" "Server Path" "Linux Version" "System Update" "Script Last Modified"
 )
 info_values=(
     "$OS" "$KERNEL" "$UPTIME" "$SHELL_NAME" "$TERM_NAME" "$CPU_MODEL" "$CPU_STATUS" "$GPU_MODEL" "$GPU_STATUS" "$PKGS" "$RAM_USED / $RAM_TOTAL" "$DISK_USED / $DISK_TOTAL" "$BATTERY" "$IP" "$WEATHER" "$SERVER_HOSTNAME" "$SERVER_PATH" "$LINUX_VERSION" "$SYSTEM_UPDATE" "$SCRIPT_LAST_MODIFIED"
