@@ -286,7 +286,7 @@ AUTHOR_NAME="Gurraoptimus"
 ENTERPRISE_NAME="Gurraoptimus Development"
 GITHUB_URL="https://github.com/gurraoptimus"
 WEBSITE_URL="https://gurraoptimus.se"
-PROJECT_URL="https://gurraoptimus.se/Ultrafetch"
+PROJECT_URL="https://gurraoptimus.se/ultrafetch"
 PROJECT_NAME="Ultra Fetch"
 LICENSE="Apache License 2.0"
 
@@ -298,7 +298,7 @@ OSC8_GITHUB="\e]8;;$GITHUB_URL\a$GITHUB_URL\e]8;;\a"
 OSC8_PROJECT="\e]8;;$PROJECT_NAME\a$PROJECT_NAME\e]8;;\a"
 OSC8_PROJECT="\e]8;;$PROJECT_URL\a$PROJECT_URL\e]8;;\a"
 OSC8_ENTERPRISE="\e]8;;$ENTERPRISE_NAME\a$ENTERPRISE_NAME\e]8;;\a"
-OSC8_LICENSE="\e]8;;https://gurraoptimus.se/Ultrafetch/LICENSE\a$LICENSE\e]8;;\a"
+OSC8_LICENSE="\e]8;;https://gurraoptimus.se/ultrafetch/LICENSE\a$LICENSE\e]8;;\a"
 
 printf "${BOLD}${CYAN}Written by %s${RESET}\n${WHITE}GitHub:${RESET} %b\n${CYAN}Website:${RESET} %b\n${GREEN}Project:${RESET} %b\n${YELLOW}License:${RESET} %b\n${MAGENTA}Enterprise:${RED} %b\n\n" "$AUTHOR_NAME" "$OSC8_GITHUB" "$OSC8_WEBSITE" "$OSC8_PROJECT" "$OSC8_LICENSE" "$OSC8_ENTERPRISE"
 
